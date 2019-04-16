@@ -1,0 +1,24 @@
+public class MySearchBehavior extends CoordinatorLayout.Behavior {
+
+
+    public MySearchBehavior() {
+    }
+
+
+    public MySearchBehavior(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
+        return dependency instanceof AppBarLayout;
+    }
+
+    @Override
+    public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
+        float dy = dependency.getTop();
+        child.setTranslationY(-dy);
+
+        return true;
+    }
+ }
