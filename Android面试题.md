@@ -1,4 +1,4 @@
-### 模块化实现（好处，原因）
+#### 模块化实现（好处，原因）
 * 为什么模块间解耦，复用？   	
 > 原因：各个都是独立的模块，每个模块负责的功能不同，业务逻辑不同，模块间业务解耦。模块功能比较单一，可在多个项目中使用
 * 为什么可以多团队并行开发，测试？
@@ -7,12 +7,11 @@
 > 原因：每个模块实际上也是一个完整的项目，可以进行单独编译，调试
 
 #### 统计启动时长,标准
-本地启动时间的统计方式（adb）
 adb shell am start -w packagename/activity
 会返回3个值：
-WaitTime 返回从 startActivity 到应用第一帧完全显示这段时间. 就是总的耗时，包括前一个应用 Activitypause 的时间和新应用启动的时间；
-ThisTime 表示一连串启动 Activity 的最后一个 Activity 的启动耗时；
-TotalTime 表示新应用启动的耗时，包括新进程的启动和 Activity 的启动，但不包括前一个应用Activitypause的耗时。开发者一般只要关心 TotalTime 即可，这个时间才是自己应用真正启动的耗时。
+* WaitTime 返回从 startActivity 到应用第一帧完全显示这段时间. 就是总的耗时，包括前一个应用 Activitypause 的时间和新应用启动的时间；
+* ThisTime 表示一连串启动 Activity 的最后一个 Activity 的启动耗时；
+* TotalTime 表示新应用启动的耗时，包括新进程的启动和 Activity 的启动，但不包括前一个应用Activitypause的耗时。开发者一般只要关心 TotalTime 即可，这个时间才是自己应用真正启动的耗时。
 
 #### SP是进程同步的吗?有什么方法做到同步
 * 不能，它基于单个文件的，默认是没有考虑同步互斥，而且，APP对SP对象做了缓存，不好互斥同步；
@@ -34,18 +33,18 @@ TotalTime 表示新应用启动的耗时，包括新进程的启动和 Activit
 * 注册时用一个ArrayList保存ReceiverRecord（继承自IntentFilter），发送的时候对其进行遍历，然后调用onReceive();
 
 #### Binder机制
-## 概念：
+##### 概念：
 * 机制：BInder是一种Android中实现跨进程通信（IPC）的方式；
 * 组成：是一种物理设备驱动，文件目录：/dev/binder
 * Android中的体现：继承自IBinder接口；
-## 概为什么选用Binder：
+##### 概为什么选用Binder：
 * 性能：Bidner数据拷贝只需要一次；
 * 安全性：传统的IPC自身没有安全措施，只能依赖上层协议控制，而Binder是根据UID（安装时分配），故进程的UID是鉴别进程身份的重要标志。
-## Linux中其他通信方式：
+##### Linux中其他通信方式：
 * Socket：是一个通用接口；导致传输效率低，开销大，基于文件和端口，适用于网络传输；
 * 管道（Pie）/消息队列：消息队列和管道采用存储-转发方式，即数据先从发送方缓存区拷贝到内核开辟的缓存区中，然后再从内核缓存区拷贝到接收方缓存区；需要2次拷贝；
 * 共享内存：实现机制比较复杂；
-## Binder机制整体流程：
+##### Binder机制整体流程：
 * --> bindService() 
 * --> onServiceConnected() （返回IBinder对象）
 * --> Stub.asInterface()
@@ -59,10 +58,6 @@ Handler 机制
 
 
 android 事件传递机制
-
-
-Https请求慢的解决办法，DNS，携带数据，直接访问IP
-https://mp.weixin.qq.com/s?__biz=MzAxNjI3MDkzOQ==&mid=203692759&idx=1&sn=780965af241555b80c48eee982c501e6#rd
 
 
 #### 画出 Android 的大体架构图
@@ -95,128 +90,51 @@ https://mp.weixin.qq.com/s?__biz=MzAxNjI3MDkzOQ==&mid=203692759&idx=1&sn=780965a
 * ActivityThread利用ClassLoader去加载Activity，创键Activity实例，并且回调一系列的生命周期的方法；
 
 
-对Dalvik、ART 虚拟机有基本的了解；
-Dalvik （4.4以前）
-Dalvik虚拟机在启动的时候会先将.dex文件转换成快速运行的机器码，又因为65535这个问题，导致我们在应用冷启动的时候有一个合包的过程，最后导致的一个结果就是我们的app启动慢，这就是Dalvik虚拟机的JIT特性（Just In Time）。
+#### 对Dalvik、ART 虚拟机有基本的了解；
+##### Dalvik（4.4以前）
+> Dalvik虚拟机在启动的时候会先将.dex文件转换成快速运行的机器码，又因为65535这个问题，导致我们在应用冷启动的时候有一个合包的过程，最后导致的一个结果就是我们的app启动慢，这就是Dalvik虚拟机的JIT特性（Just In Time）。
 采用传统的垃圾回收算法，会出现内存碎片化；（标记-->回收-->恢复）
-ART （5.0开始）
-ART有一个很好的特性AOT（ahead of time），这个特性就是我们在安装APK的时候就将dex直接处理成可直接供ART虚拟机使用的机器码，ART虚拟机将.dex文件转换成可直接运行的.oat文件，ART虚拟机天生支持多dex，所以也不会有一个合包的过程，所以ART虚拟机会很大的提升APP冷启动速度。
+##### ART （5.0开始）
+> ART有一个很好的特性AOT（ahead of time），这个特性就是我们在安装APK的时候就将dex直接处理成可直接供ART虚拟机使用的机器码，ART虚拟机将.dex文件转换成可直接运行的.oat文件，ART虚拟机天生支持多dex，所以也不会有一个合包的过程，所以ART虚拟机会很大的提升APP冷启动速度。
 ART虚拟机允许标记和回收可以同时进行；另外引入了移动垃圾回收器技术，使得碎片化的内存能够对齐，能够节约一点内存。
 
-GC回收策略，能不能显式调用System.gc()
-新生代的GC：
-新生代通常存活时间较短，因此基于Copying算法来进行回收；
-所谓Copying算法就是扫描出存活的对象，并复制到一块新的完全未使用的空间中，对应于新生代，就是在Eden和FromSpace或ToSpace之间copy。
-旧生代的GC：
-对象存活的时间比较长，比较稳定，因此采用标记(Mark)算法来进行回收（具体实现的是可达性算法）；
-所谓标记就是扫描出存活的对象，然后再进行回收未被标记的对象，回收后对用空出的空间要么进行合并，要么标记出来便于下次进行分配，总之就是要减少内存碎片带来的效率损耗。
-不推荐显式调用System.gc():
-此函数建议JVM进行主GC,虽然只是建议而非一定,但很多情况下它会触发主GC,从而增加主GC的频率,也即增加了间歇性停顿的次数。
-可达性算法：
-当一个对象到GC Roots没有任何引用链相连时，则证明此对象是不可用的
-Java语言里，可作为GC Roots对象的包括如下几种：     a.虚拟机栈(栈桢中的本地变量表)中的引用的对象     b.方法区中的类静态属性引用的对象     c.方法区中的常量引用的对象     d.本地方法栈中JNI的引用的对象 
-
-
-App是如何沙箱化，为什么要这么做；
-沙箱，对使用者来说可以理解为一种安全环境，对恶意访问者来说是一种限制。
+#### App是如何沙箱化，为什么要这么做；
+> 沙箱，对使用者来说可以理解为一种安全环境，对恶意访问者来说是一种限制。
 Android 沙箱实现了应用程序的相互隔离，用于对文件系统的实体访问进行控制，也可以对其他Android系统资源进行访问控制。
 简单的说，每个应用程序无法访问其他应用程序的资源。沙箱系统的原理主要基于Linux系统的UID/GID机制。Android对传统的 Linux的UID/GID机制进行了修改。在 Linux 中，一个用户 ID 识别一个给定用户;在 Android 上，一个用户 ID 识别一个应用程序。
 Android定义了从名称到独特标识符的Android ID(AID)映射表。初始的映射表中定义了一些特权用户和一些系统关键用户。（用来代替UID/GID）
 
-
-系统启动流程
-Zygote进程 –> SystemServer进程 –> 各种系统服务 –> 应用进程
-
-recycleview，listview
+#### 系统启动流程
+> Zygote进程 –> SystemServer进程 –> 各种系统服务 –> 应用进程
 
 
-listview图片加载错乱的原理和解决方案
+#### Retrofit理解？
+* OKHttpCall.execute（），该方法生成一个okhttp3.Call将任务抛给OKHttp。
+* 完了调用parseResponse，用Converter将okhttp3.Response转换成我们在范型中指定的类型Response<ResponseBody> response = call.execute()，我指定了okhttp3.ResonseBody，然后返回结果。
+* 可以在在构造Retrofit时提供GsonConverter，addConverterFactory(GsonConverterFactory.create())；
+
+#### RxJava：
 
 
-RxJava，Retrofit理解？
-Retrofit：
-OKHttpCall.execute（），该方法生成一个okhttp3.Call将任务抛给OKHttp。
-完了调用parseResponse，用Converter将okhttp3.Response转换成我们在范型中指定的类型Response<ResponseBody> response = call.execute()，我指定了okhttp3.ResonseBody，然后返回结果。
-可以在在构造Retrofit时提供GsonConverter，addConverterFactory(GsonConverterFactory.create())；
-RxJava：
-O
-
-Glide源码？glide 使用什么缓存？
+#### Glide源码？glide 使用什么缓存？
 磁盘缓存：默认使用的是LRU（Least Recently Used）算法（时间）。如果你想使用其他的缓存算法，就只能通过实现DiskCache接口来完成了。
 内存缓存：Glide中有一个叫做BitmapPool的类，可以复用其中的Bitmap对象，从而避免Bitmap对象的创建，减小内存开销。
 
-排序，快速排序的实现
-
-
-Java中对象的生命周期
-创建阶段(Created)
-一旦对象被创建，并被分派给某些变量赋值，这个对象的状态就切换到了应用阶段;
-
-应用阶段(In Use)
-对象至少被一个强引用持有着。
-
-不可见阶段(Invisible)
-当一个对象处于不可见阶段时，说明程序本身不再持有该对象的任何强引用，虽然该这些引用仍然是存在着的。（该对象仍可能被静态变量或线程或JNI等强引用持有着）
-简单说就是程序的执行已经超出了该对象的作用域了。
-
-不可达阶段(Unreachable)
-对象处于不可达阶段是指该对象不再被任何强引用所持有。
-
-收集阶段(Collected)
-当垃圾回收器发现该对象已经处于“不可达阶段”并且垃圾回收器已经对该对象的内存空间重新分配做好准备时，则对象进入了“收集阶段”。如果该对象已经重写了finalize()方法，则会去执行该方法的终端操作。（不推荐重写finalize()方法）
-
-终结阶段(Finalized)
-当对象执行完finalize()方法后仍然处于不可达状态时，则该对象进入终结阶段。在该阶段是等待垃圾回收器对该对象空间进行回收。
-
-对象空间重分配阶段(De-allocated)
-垃圾回收器对该对象的所占用的内存空间进行回收或者再分配了，则该对象彻底消失了，称之为“对象空间重新分配阶段”。
-
-类加载机制
-双亲委派机制
-PathClassLoader，DexClassLoader，dexPathList，Element,
-
-
-双亲委派模型
-双亲委托模型就是首先判断该Class是否已经加载，如果没有则不是自身去查找而是委托给父加载器进行查找，这样依次的进行递归，直到委托到最顶层的Bootstrap ClassLoader，如果Bootstrap ClassLoader找到了该Class，就会直接返回，如果还没找到则最后会交由自身（出发点）去查找（并不会向下查找），如果还没找到，则ClassNotFoundException。
-启动类加载器（Bootstrap ClassLoader）：这是由C++语言实现的一个加载器，是虚拟机的一部分，随虚拟机启动运行。
-扩展类加载器（Extension ClassLoader）：负责加载/lib/ext目录中的，或者被java.ext.dir系统变量指定路径中的所有类库。
-应用程序类加载器（Application ClassLoader）：负责加载用户类路径（ClassPath）上所指定的类库，如果程序中没有自定义自己的类加载器，这个就是默认加载器。
-双亲委托模型的好处：
-防止内存中出现多份同样的字节码，比如两个类A和类B都要加载System类：
-如果不用委托而是自己加载自己的，那么类A就会加载一份System字节码，然后类B又会加载一份System字节码，这样内存中就出现了两份System字节码。
-
-
-Bitmap如何处理大图，如一张30M的大图，如何预防OOM
-setImageBitmap或setImageResource或BitmapFactory.decodeResource直接使用图片路径来设置一张大图。（最终都是通过java层的createBitmap来完成的，需要消耗更多内存）
-解决方法：
+#### Bitmap如何处理大图，如一张30M的大图，如何预防OOM
+> setImageBitmap或setImageResource或BitmapFactory.decodeResource直接使用图片路径来设置一张大图。（最终都是通过java层的createBitmap来完成的，需要消耗更多内存）
+##### 解决方法：
 通过BitmapFactory.decodeStream方法，（decodeStream直接调用JNI>>nativeDecodeAsset()，无需再使用java层的createBitmap，从而节省了java层的空间。）
 Decode时使用BitmapFactory.Options参数；
 Options.inSampleSize, 成比例放缩
 Options.inJustDecodeBounds，只获取长宽，不获取图片
 Options.inPreferredConfig，修改图片编码格式
 D手动回收Bitmap；
-加载微信长图方案：
-1，BitmapRegionDecoder用于显示图片的某一块矩形区域；（bitmapRegionDecoder.decodeRegion(rect, options)）
-2，自定义显示大图控件：
-A，提供一个设置图片的入口
-B，重写onTouchEvent，在里面根据用户移动的手势，去更新显示区域的参数
-C，每次更新区域参数后，调用invalidate，onDraw里面去regionDecoder.decodeRegion拿到bitmap，去draw；
-
-
-https相关，如何验证证书的合法性，https中哪里用了对称加密，哪里用了非对称加密，对加密算法（如RSA）等是否有了解
-问题域：A与B通信，有且只有A和B能够知道通信内容
-对称加密（AES或者其他加密算法）：对通信内容进行加密；
-问题一：服务器怎么告诉客户端使用哪种加密算法？（通过协商，若协商没有加密，仍然有风险）
-非对称加密：（RSA或者其他算法）：对对称加密的协商过程进行加密（采用随机数来生成对称加密算法）；
-问题二：怎么得到公钥？
-将公钥放到服务器（有多了一次请求）。
-服务端将公钥发送给每一个客户端（可行）；
-问题三：公钥被掉包了怎么办？
-使用第三方机构（CA）的公钥解决：“数字证书”中包含了服务器交给第三方的公钥，客户端拿到公钥，如果能解密，说明是服务器返回的，反之，则被掉包了；（第三方机构会使用自己的私钥对服务器的公钥再次加密）
-问题四：第三方机构也可以给中间人颁发这样的“数字证书”，这样还是有风险进行掉包？
-数字签名（数字证书的编号）：在证书上面写着如何生成证书编号。客户端生成编号以后和证书中的编号进行对比；
-
-非对称加密的特点：私钥加密后的密文，只要是公钥都能解密；公钥加密的密文，只有私钥才能解开；
+##### 加载微信长图方案：
+* BitmapRegionDecoder用于显示图片的某一块矩形区域；（bitmapRegionDecoder.decodeRegion(rect, options)）
+* 自定义显示大图控件：
+   * 提供一个设置图片的入口
+   * 重写onTouchEvent，在里面根据用户移动的手势，去更新显示区域的参数
+   * 每次更新区域参数后，调用invalidate，onDraw里面去regionDecoder.decodeRegion拿到bitmap，去draw；
 
 
 广播（动态注册和静态注册区别，有序广播和标准广播），广播的使用场景
