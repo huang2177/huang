@@ -4,6 +4,6 @@
 ##### 可见性
 ##### 有序性
 
-![JMM工作原理](../image/JMM工作原理.jpg)
+<!--![JMM工作原理](../image/JMM.jpg)-->
 
-<!--<img src="https://github.com/huang2177/huang/blob/master/image/JMM工作原理.jpg" alt="JMM工作原理" width="500" height="300" align="bottom"/>-->
+<img src="https://github.com/huang2177/huang/blob/master/image/JMM.jpg" alt="JMM工作原理" width="500" height="300" align="bottom"/>
