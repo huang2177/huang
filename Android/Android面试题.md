@@ -241,11 +241,10 @@ public void test(final int b) {
 
 ##### Parcelable：
 > Android提供的Api，将序列化后的字节流写入到一个共性内存中，其他对象也可以从这里读取字节流，因此效率比较高，适合对象之间或者进程之间传递对象；
-步骤：
- - implements Parcelable
- - 重写writeToParcel方法，将你的对象序列化为一个Parcel对象，即：将类的数据写入外部提供的Parcel中，打包需要传递的数据到Parcel容器保存，以便从 Parcel容器获取数据；
- - 重写describeContents方法，内容接口描述，默认返回0就可以；
- - 实例化静态内部对象CREATOR实现接口Parcelable.Creator；
+
+* 需要手动实现序列化的内容，需要指定每个变量的序列化和反序列化；
+* 把复杂的对象拆分成可传输的基础数据类型，便于传输；
+* 底层调用native实现；
 
 ### 项目：拉活怎么做的
 
@@ -273,3 +272,4 @@ Android 4.4 后才可使用；
 ##### webView内存泄漏相关问题优化：
 
 
+### 进程间通信方式？
