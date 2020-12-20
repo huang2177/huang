@@ -64,7 +64,8 @@ Lru的全称是Least Recently Used ，近期最少使用的；把近期最少使
   * 非静态内部类会隐式地持有外部类的引用； 
   * Context泄露； 概括一下，避免Context相关的内存泄露，记住以下事情：    
     * 不要保留对Context-Activity长时间的引用（对Activity的引用的时候，必须确保拥有和Activity一样的生命周期）；    	
-    * 尝试使用Context-Application来替代Context-Activity 3、如果你不想控制内部类的生命周期，应避免在Activity中使用非静态的内部类，而应该使用静态的内部类，并在其中创建一个对Activity的弱引用；       这种情况的解决办法是使用一个静态的内部类，其中拥有对外部类的WeakReference； 
+    * 尝试使用Context-Application来替代Context-Activity
+    * 如果你不想控制内部类的生命周期，应避免在Activity中使用非静态的内部类，而应该使用静态的内部类，并在其中创建一个对Activity的弱引用；       这种情况的解决办法是使用一个静态的内部类，其中拥有对外部类的WeakReference； 
     * Thread 引用其他对象也容易出现对象泄露； 
     * onReceive方法里执行了太多的操作；
 * 内存压力过大
@@ -75,3 +76,16 @@ Lru的全称是Least Recently Used ，近期最少使用的；把近期最少使
   * 对于引用生命周期不一样的对象，可以用软引用或弱引用SoftReferner WeakReferner； 	
   * 对于资源对象 使用finally 强制关闭； 	
   * 内存压力过大就要统一的管理内存；
+
+### 为什么局部内部类和匿名内部类只能访问局部final变量：
+public void test(final int b) {
+    final int a = 10;
+    new Thread() {
+        public void run() {
+            System.out.println(a);
+            System.out.println(b);
+        }
+    }.start();
+}
+> 当test方法执行完毕之后，变量a的生命周期就结束了，而此时Thread对象的生命周期很可能还没有结束。所以Java采用了 复制  的手段来解决这个问题（会把a复制到常量池中），使用final是不允许内部类改变a的值。
+

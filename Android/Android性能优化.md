@@ -1,0 +1,40 @@
+### Android相关优化（如内存优化、网络优化、布局优化、电量优化）
+##### 内存优化：
+* 使用更加轻量的数据结构，比如SparseArray、ArrayMap等
+* 避免在Android里面使用Enum
+* 减小Bitmap对象的内存占用，
+* 使用更小的图片
+* 优化界面交互过程中频繁的内存使用；譬如在列表等操作中只加载可见区域的Bitmap、滑动时不加载、停止滑动后再开始加载。
+* 尽量使用线程池替代多线程操作，这样可以节约内存及CPU占用率。
+* 避免创建不必要的对象诸如一些临时对象, 特别是循环中的.
+
+##### 网络优化：
+* 压缩/减少数据传输量
+* 利用缓存减少网络传输
+* 针对弱网(移动网络), 不自动加载图片
+* 界面先反馈, 请求延迟提交
+* 例如, 用户点赞操作, 可以直接给出界面的点赞成功的反馈, 使用 HYPERLINK "https://link.jianshu.com/?t=https://developer.android.com/reference/android/app/job/JobScheduler.html" \t "https://www.jianshu.com/p/_blank" JobScheduler在网络情况较好的时候打包请求.
+
+##### 布局优化：
+* 重用（include）
+* 合并：
+* RelativeLayout会让子View调用2次onMeasure；
+* LinearLayout 在有weight时，才会让子View调用2次onMeasure。Measure的耗时越长那么绘制效率就低。
+* merge的使用；
+* 懒加载（ViewStub）
+
+### Bitmap如何处理大图，如一张30M的大图，如何预防OOM
+> setImageBitmap或setImageResource或BitmapFactory.decodeResource直接使用图片路径来设置一张大图。（最终都是通过java层的createBitmap来完成的，需要消耗更多内存）
+##### 解决方法：
+通过BitmapFactory.decodeStream方法，（decodeStream直接调用JNI>>nativeDecodeAsset()，无需再使用java层的createBitmap，从而节省了java层的空间。）
+Decode时使用BitmapFactory.Options参数；
+Options.inSampleSize, 成比例放缩
+Options.inJustDecodeBounds，只获取长宽，不获取图片
+Options.inPreferredConfig，修改图片编码格式
+D手动回收Bitmap；
+##### 加载微信长图方案：
+* BitmapRegionDecoder用于显示图片的某一块矩形区域；（bitmapRegionDecoder.decodeRegion(rect, options)）
+* 自定义显示大图控件：
+   * 提供一个设置图片的入口
+   * 重写onTouchEvent，在里面根据用户移动的手势，去更新显示区域的参数
+   * 每次更新区域参数后，调用invalidate，onDraw里面去regionDecoder.decodeRegion拿到bitmap，去draw；
