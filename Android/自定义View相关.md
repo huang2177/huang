@@ -34,8 +34,9 @@
 * 在这几个流程中都会去遍历 View 树来刷新需要更新的View；
 
 ### invalidate 和 requestLayout
-* requestLayout会直接递归调用父窗口的requestLayout，直到ViewRootImpl,然后触发peformTraversals，由于mLayoutRequested为true，会导致onMeasure和onLayout被调用。不一定会触发OnDraw
-   * requestLayout触发onDraw可能是因为在在layout过程中发现l,t,r,b和以前不一样，那就会触发一次invalidate，所以触发了onDraw，也可能是因为别的原因导致mDirty非空（比如在跑动画）
+> invalidate 和 requestLayout都会触发整个流程的绘制；
+> 但是在measure和layout过程中，只会对flag设置为FORCE_LAYOUT的情况进行测量和布局，而draw只会重绘flag为dirty的区域；
 
-* view的invalidate会导致当前view被重绘,由于mLayoutRequested为false；
-* 不会导致onMeasure和onLayout被调用，而OnDraw会被调用。
+* requestLayout只会设置FORCE_LAYOUT标志，所以只会触发measure和layout；
+* invalidate只会设置dirty标志，只会触发draw；
+

@@ -89,3 +89,6 @@ public void test(final int b) {
 }
 > 当test方法执行完毕之后，变量a的生命周期就结束了，而此时Thread对象的生命周期很可能还没有结束。所以Java采用了 复制  的手段来解决这个问题（会把a复制到常量池中），使用final是不允许内部类改变a的值。
 
+### 为什么要同时重写hashcode和equals?
+* 并没有硬性要求一定要同时修改这两个方法，只是要求，当equals方法被重写，hashcode也必须要被重写。
+* 目的：要维持对象的一个规则，当两个对象调equals返回true，则两个对象的hashcode是一致的

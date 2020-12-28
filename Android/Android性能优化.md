@@ -45,15 +45,22 @@
 * GPU栅格化需要显示内容并渲染到屏幕；（栅格化就是把矢量图转化为位图的过程）
 
 
-### Bitmap如何处理大图，如一张30M的大图，如何预防OOM
+### Bitmap优化
 > setImageBitmap或setImageResource或BitmapFactory.decodeResource直接使用图片路径来设置一张大图。（最终都是通过java层的createBitmap来完成的，需要消耗更多内存）
-##### 解决方法：
-通过BitmapFactory.decodeStream方法，（decodeStream直接调用JNI>>nativeDecodeAsset()，无需再使用java层的createBitmap，从而节省了java层的空间。）
+##### BitmapFactory.decodeStream
+* 通过BitmapFactory.decodeStream方法，（decodeStream直接调用JNI>>nativeDecodeAsset()，无需再使用java层的createBitmap，从而节省了java层的空间。）
 Decode时使用BitmapFactory.Options参数；
 Options.inSampleSize, 成比例放缩
 Options.inJustDecodeBounds，只获取长宽，不获取图片
 Options.inPreferredConfig，修改图片编码格式
-D手动回收Bitmap；
+手动回收Bitmap；
+
+##### Bitmap内存计算：
+* 像素数据的内存=图片宽 x 图片高 x 单个像素内存大小 x 缩放比例，
+* 缩放比例 = 手机密度 / 当前图片所处文件夹的像素密度（MDPI -- 160、HDPI -- 240、XHDPI -- 320、 XXHDPI -- 480、 XXXHDPI -- 640）
+* 这里宽高均为100，单个像素的内存因为是ARGB_8888格式所以为4x8bit = 4byte，总大小=100x100x4byte。
+* 如果宽高不变，用Bitmap.Config.RGB_565格式加载，则大小=100x100x2byte
+
 ##### 加载微信长图方案：
 * BitmapRegionDecoder用于显示图片的某一块矩形区域；（bitmapRegionDecoder.decodeRegion(rect, options)）
 * 自定义显示大图控件：

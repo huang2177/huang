@@ -44,3 +44,15 @@
 * 每个app运行时前首先创建一个进程，该进程是由Zygote fork出来的，用于承载App上运行的各种Activity/Service等组件。
 * app所有线程与App所在进程之间资源共享，从Linux角度来说进程与线程除了是否共享资源外，并没有本质的区别，都是一个task_struct结构体。
 * 其实承载**ActivityThread的主线程就是由Zygote fork而创建的进程**。
+
+### Handler导致内存泄漏的真实原因？
+* 当直接在activity中声明handler时，由于后面的匿名内部类，使handler持有了activity的引用。
+* 当任务未执行完，即message未被执行完时，message持有了messageQueue的引用。
+* messageQueue持有了mLooper的引用。
+* mLooper持有sThreadLocal 的引用。
+* sThreadLocal 是一个静态变量，无法被回收，最终导致了activity无法被回收，造成了内存泄漏。
+
+##### 解决办法：
+* 在destroy中用removeMessage来移除消息
+* 静态内部类（静态内部类和外部类没区别）；
+* 试用WeakReference来包裹Activity（有风险，因为gc是无法控制的，万一gc发生导致acivity回收了，就无法正常work了）。
