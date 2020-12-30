@@ -66,6 +66,35 @@
    * 非公平锁：如果同时还有另一个线程进来尝试获取，那么有可能会让这个线程抢先获取；
    * 公平锁：如果同时还有另一个线程进来尝试获取，当它发现自己不是在队首的话，就会排到队尾，由队首的线程获取到锁。
 
-
 ### Atomic相关类
 > 底层由CAS实现；
+
+### 内核线程（KLT）
+* 进程中的一个线程被阻塞了， 内核能调度同一进程的其它线程占有处理器运行；
+* 应用程序线程在用户态运行，线程调度和管理在内核实现，在同一进程中，控制权从一个线程传送到另一个线程时需要模式切换，系统开销较大；
+
+### 线程池
+
+##### 为什么需要线程池？
+* Java底层实际上KLT（Kernel Level Thread），线程切换是开销极大；
+* 哪些情况需要使用线程池：
+  * 单个任务执行时间比较短，如果时间比较长推荐使用线程；
+  * 执行任务量比较大；
+
+##### 线程池参数
+* corePoolSize：核心线程数量
+* maximumPoolSize：最大线程数量，包含corePoolSize；
+* keepAliveTime：非核心线程空闲时的留存时间；
+* unit：keepAliveTime的单位；
+* workQueue：用于存放任务的队列；
+* handler：当任务数量 大于 maximumPoolSize + workQueue时候的拒绝策略；
+  * DiscardOldestPolicy：放弃最老的；
+  * AbortPolicy：直接抛异常；
+  * CallerRunsPolicy：直接执行；
+  * DiscardPolicy：do nothing；
+
+##### 线程池执行过程
+* 当调用execute执行任务（7个）时，会首先交给核心线程去执行；
+* 当核心线程已占满时，会把数据放到blockingQueue里面，等待执行；
+* 当blockingQueue放满的时候，如果有非核心线程，则交给非核心线程执行；
+* 当任务数量 大于 maximumPoolSize + workQueue时候的拒绝策略；
