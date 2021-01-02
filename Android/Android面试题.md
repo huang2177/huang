@@ -62,29 +62,6 @@ Android 沙箱实现了应用程序的相互隔离，用于对文件系统的实
 简单的说，每个应用程序无法访问其他应用程序的资源。沙箱系统的原理主要基于Linux系统的UID/GID机制。Android对传统的 Linux的UID/GID机制进行了修改。在 Linux 中，一个用户 ID 识别一个给定用户;在 Android 上，一个用户 ID 识别一个应用程序。
 Android定义了从名称到独特标识符的Android ID(AID)映射表。初始的映射表中定义了一些特权用户和一些系统关键用户。（用来代替UID/GID）
 
-### 系统启动流程
-> Zygote进程 –> SystemServer进程 –> 各种系统服务 –> 应用进程
-
-### Retrofit理解？
-* OKHttpCall.execute（），该方法生成一个okhttp3.Call将任务抛给OKHttp。
-* 完了调用parseResponse，用Converter将okhttp3.Response转换成我们在范型中指定的类型Response<ResponseBody> response = call.execute()，我指定了okhttp3.ResonseBody，然后返回结果。
-* 可以在在构造Retrofit时提供GsonConverter，addConverterFactory(GsonConverterFactory.create())；
-
-### RxJava：
-
-### Glide源码？glide 使用什么缓存？
-磁盘缓存：默认使用的是LRU（Least Recently Used）算法（时间）。如果你想使用其他的缓存算法，就只能通过实现DiskCache接口来完成了。
-内存缓存：Glide中有一个叫做BitmapPool的类，可以复用其中的Bitmap对象，从而避免Bitmap对象的创建，减小内存开销。
-
-### 模式MVP,MVC,MVVM介绍
-
-### 逻辑地址与物理地址，为什么使用逻辑地址
-
-### ANR的原因
-
-### sqlite升级，增加字段的语句
-
-### AndroidManifest的作用与理解
 
 ### Serializable，为什么引入Parcelable，怎样简化Parcelable的使用；
 ##### Serializable：
@@ -116,5 +93,3 @@ Android 4.4 后才可使用；
 * 通过 WebChromeClient 的onJsAlert()、onJsConfirm()、onJsPrompt（）方法回调拦截JS对话框alert()、confirm()、prompt（） 消息
 
 ##### webView内存泄漏相关问题优化：
-
-### 进程间通信方式？
