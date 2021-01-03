@@ -16,7 +16,7 @@
 > MMAP: memory mapping
 > 其实我们所讲的工作内存、主内存实际上是一个虚拟内存，真正的只有一个物理内存。而binder的一次拷贝就是指：binder的内存和主内存实际上是映射到同一个物理内存；
 
-### Binder机制整体流程：
+### AIDL整体流程：
 * --> bindService()
 * --> onServiceConnected() （返回IBinder对象）
 * --> Stub.asInterface()    接收数据（需要根据是否是同进程，决定返回Stub自身，还是返回的是服务端的Proxy）
