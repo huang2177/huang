@@ -47,8 +47,8 @@
 
 ### Handler导致内存泄漏的真实原因？
 * 当直接在activity中声明handler时，由于后面的匿名内部类，使handler持有了activity的引用。
-* 当任务未执行完，即message未被执行完时，message持有了messageQueue的引用。
-* messageQueue持有了mLooper的引用。
+* 当任务未执行完，即message未被执行完时，message持有了Handler的引用。
+* Handler持有了mLooper的引用。
 * mLooper持有sThreadLocal 的引用。
 * sThreadLocal 是一个静态变量，无法被回收，最终导致了activity无法被回收，造成了内存泄漏。
 
