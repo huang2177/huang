@@ -24,3 +24,9 @@ class CountingSet2<T>(val innerSet: MutableCollection<T>) : MutableCollection<T>
 > 可以选择性实现父类的方法，不然的话需要全部实现；
 
 #### 高阶函数简化代码
+
+
+# Kotlin 子协程异常时取消顺序
+* 抛出异常的子协程
+* 父协程通知其他子协程停止
+* 直到所有的子协程全部停止，父协程才会终止
